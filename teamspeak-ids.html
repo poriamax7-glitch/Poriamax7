@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamepak</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0B1220;
+    --bg-raised:#101A2E;
+    --line:#1E2A44;
+    --text:#E8ECF1;
+    --muted:#7C8798;
+    --cyan:#3DDC97;
+    --blue:#4FB0FF;
+    --amber:#FFB86B;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(79,176,255,0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 100%, rgba(61,220,151,0.08), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .mono{font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:embed;}
+
+  /* ---------- Header ---------- */
+  header{
+    padding:56px 24px 40px;
+    max-width:1000px;
+    margin:0 auto;
+    position:relative;
+  }
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    color:var(--cyan);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.5px;
+    margin-bottom:18px;
+  }
+  .dot-live{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 0 0 rgba(61,220,151,.7);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(61,220,151,.55);}
+    70%{box-shadow:0 0 0 8px rgba(61,220,151,0);}
+    100%{box-shadow:0 0 0 0 rgba(61,220,151,0);}
+  }
+  h1{
+    font-size:clamp(28px, 5vw, 44px);
+    font-weight:800;
+    line-height:1.25;
+    max-width:680px;
+  }
+  h1 span{color:var(--blue);}
+  .sub{
+    color:var(--muted);
+    margin-top:14px;
+    max-width:560px;
+    font-size:15px;
+    line-height:1.9;
+  }
+
+  /* waveform decoration */
+  .wave{
+    display:flex; align-items:flex-end; gap:3px; height:34px; margin-top:26px;
+  }
+  .wave i{
+    width:4px; border-radius:2px;
+    background:linear-gradient(180deg, var(--blue), var(--cyan));
+    animation:bar 1.2s ease-in-out infinite;
+    opacity:.55;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wave i, .dot-live{animation:none;}
+  }
+  .wave i:nth-child(1){height:10px; animation-delay:0s;}
+  .wave i:nth-child(2){height:22px; animation-delay:.1s;}
+  .wave i:nth-child(3){height:14px; animation-delay:.2s;}
+  .wave i:nth-child(4){height:30px; animation-delay:.3s;}
+  .wave i:nth-child(5){height:18px; animation-delay:.4s;}
+  .wave i:nth-child(6){height:26px; animation-delay:.5s;}
+  .wave i:nth-child(7){height:12px; animation-delay:.6s;}
+  .wave i:nth-child(8){height:20px; animation-delay:.7s;}
+  @keyframes bar{
+    0%,100%{transform:scaleY(1);}
+    50%{transform:scaleY(1.6);}
+  }
+
+  /* ---------- Controls ---------- */
+  .controls{
+    max-width:1000px; margin:0 auto; padding:0 24px 20px;
+    display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  }
+  .search{
+    flex:1; min-width:220px;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 16px;
+    color:var(--text);
+    font-family:inherit;
+    font-size:14px;
+    outline:none;
+    transition:border-color .2s;
+  }
+  .search:focus{border-color:var(--blue);}
+  .search::placeholder{color:var(--muted);}
+
+  .tabs{display:flex; gap:8px; background:var(--bg-raised); border:1px solid var(--line); border-radius:12px; padding:4px;}
+  .tab{
+    border:none; background:transparent; color:var(--muted);
+    font-family:inherit; font-size:13px; font-weight:600;
+    padding:9px 16px; border-radius:9px; cursor:pointer;
+    transition:.2s;
+  }
+  .tab.active{background:var(--blue); color:#04101F;}
+  .tab:not(.active):hover{color:var(--text);}
+
+  /* ---------- Sections ---------- */
+  main{max-width:1000px; margin:0 auto; padding:0 24px;}
+  .section{margin-top:36px;}
+  .section-head{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:16px;
+  }
+  .flag{font-size:22px;}
+  .section-title{font-size:18px; font-weight:700;}
+  .section-count{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; color:var(--muted);
+    background:var(--bg-raised); border:1px solid var(--line);
+    padding:3px 9px; border-radius:20px;
+  }
+  .section-line{flex:1; height:1px; background:var(--line);}
+
+  .grid{display:grid; grid-template-columns:1fr; gap:10px;}
+
+  .card{
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    display:flex; align-items:center; gap:14px;
+    flex-wrap:wrap;
+    transition:border-color .2s, transform .2s;
+  }
+  .card:hover{border-color:rgba(79,176,255,0.4); transform:translateY(-1px);}
+
+  .status{
+    width:9px; height:9px; border-radius:50%; flex-shrink:0;
+    background:var(--cyan);
+    box-shadow:0 0 0 0 rgba(61,220,151,.6);
+    animation:pulse 2.4s infinite;
+  }
+
+  .card-main{flex:1; min-width:180px;}
+  .card-name{font-weight:700; font-size:15px;}
+  .card-ip{color:var(--muted); font-size:13px; margin-top:4px;}
+
+  .tag{
+    font-family:inherit;
+    font-size:11.5px; font-weight:600;
+    padding:5px 11px; border-radius:20px;
+    white-space:nowrap;
+  }
+  .tag.گیمینگ{background:rgba(255,184,107,.12); color:var(--amber); border:1px solid rgba(255,184,107,.3);}
+  .tag.چت{background:rgba(79,176,255,.12); color:var(--blue); border:1px solid rgba(79,176,255,.3);}
+  .tag.موزیک{background:rgba(61,220,151,.12); color:var(--cyan); border:1px solid rgba(61,220,151,.3);}
+  .tag.عمومی{background:rgba(232,236,241,.08); color:var(--text); border:1px solid var(--line);}
+
+  .copy-btn{
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--muted);
+    font-family:inherit;
+    font-size:12px;
+    padding:8px 14px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .copy-btn:hover{border-color:var(--blue); color:var(--blue);}
+  .copy-btn.copied{border-color:var(--cyan); color:var(--cyan);}
+
+  .empty{
+    text-align:center; color:var(--muted); font-size:14px;
+    padding:40px 0;
+  }
+
+  .notice{
+    max-width:1000px; margin:44px auto 0; padding:0 24px;
+  }
+  .notice-box{
+    background:var(--bg-raised);
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:2;
+  }
+  .notice-box b{color:var(--text);}
+
+  footer{
+    max-width:1000px; margin:40px auto 0; padding:0 24px;
+    color:var(--muted); font-size:12.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+
+  /* ---------- Track wrappers + reveal icons ---------- */
+  .track-head{
+    display:flex; align-items:center; gap:16px;
+    max-width:1000px; margin:60px auto 0; padding:0 24px;
+  }
+  .track-head h2{font-size:20px; font-weight:800;}
+  .track-head .track-desc{color:var(--muted); font-size:13px; margin-top:4px;}
+  .track-head-text{flex:1;}
+
+  .reveal-icon{
+    position:relative;
+    width:52px; height:52px;
+    flex-shrink:0;
+  }
+  .reveal-icon svg{
+    position:absolute; inset:0; width:100%; height:100%;
+  }
+  .reveal-icon-base{opacity:.22; filter:grayscale(1);}
+  .reveal-icon-fill{
+    clip-path: inset(calc((1 - var(--fill, 0)) * 100%) 0 0 0);
+    transition: clip-path .08s linear;
+  }
+  .reveal-icon-pct{
+    position:absolute; bottom:-18px; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--muted);
+    white-space:nowrap;
+  }
+
+  /* ---------- Minecraft section ---------- */
+  .mc-card{
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    display:flex; align-items:center; gap:14px;
+    flex-wrap:wrap;
+    transition:border-color .2s, transform .2s;
+  }
+  .mc-card:hover{border-color:rgba(106,190,70,0.45); transform:translateY(-1px);}
+  .mc-status{
+    width:9px; height:9px; border-radius:2px; flex-shrink:0;
+    background:#6ABE46;
+    box-shadow:0 0 0 0 rgba(106,190,70,.6);
+    animation:pulse 2.4s infinite;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow"><span class="dot-live"></span> نمونه قالب — داده‌ها فرضی هستند</div>
+  <h1><span>Gamepak</span></h1>
+  <p class="sub">فهرستی از سرورهای تیم اسپیک، جدا شده به دو بخش ایرانی و ماینکرفت. این یک قالب نمونه است — آیدی‌های واقعی خودتون رو جایگزین کنید.</p>
+  <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</header>
+
+<div class="controls">
+  <input class="search" id="search" type="text" placeholder="جستجوی نام سرور یا آی‌پی...">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-filter="all">همه</button>
+    <button class="tab" data-filter="ir">🇮🇷 ایرانی</button>
+    <button class="tab" data-filter="global">🌍 ماینکرفت</button>
+  </div>
+</div>
+
+<div class="track-head">
+  <div class="reveal-icon" id="icon-headset">
+    <svg class="reveal-icon-base" viewBox="0 0 100 100" fill="none"><path d="M50 15a35 35 0 0 0-35 35v20" stroke="#E8ECF1" stroke-width="7" stroke-linecap="round"/><path d="M50 15a35 35 0 0 1 35 35v20" stroke="#E8ECF1" stroke-width="7" stroke-linecap="round"/><rect x="7" y="63" width="17" height="26" rx="7" fill="#E8ECF1"/><rect x="76" y="63" width="17" height="26" rx="7" fill="#E8ECF1"/><path d="M20 81q0 16 21 16h5" stroke="#E8ECF1" stroke-width="7" fill="none" stroke-linecap="round"/></svg>
+    <svg class="reveal-icon-fill" viewBox="0 0 100 100" fill="none"><path d="M50 15a35 35 0 0 0-35 35v20" stroke="#4FB0FF" stroke-width="7" stroke-linecap="round"/><path d="M50 15a35 35 0 0 1 35 35v20" stroke="#4FB0FF" stroke-width="7" stroke-linecap="round"/><rect x="7" y="63" width="17" height="26" rx="7" fill="#4FB0FF"/><rect x="76" y="63" width="17" height="26" rx="7" fill="#4FB0FF"/><path d="M20 81q0 16 21 16h5" stroke="#3DDC97" stroke-width="7" fill="none" stroke-linecap="round"/></svg>
+    <span class="reveal-icon-pct" id="pct-headset">0%</span>
+  </div>
+  <div class="track-head-text">
+    <h2>بخش TeamSpeak</h2>
+    <div class="track-desc">هرچی این بخش رو اسکرول کنید، هدست کامل‌تر می‌شه</div>
+  </div>
+</div>
+
+<main>
+
+  <div class="section" id="section-ir">
+    <div class="section-head">
+      <span class="flag">🇮🇷</span>
+      <span class="section-title">سرورهای ایرانی</span>
+      <span class="section-line"></span>
+      <span class="section-count" id="count-ir">0</span>
+    </div>
+    <div class="grid" id="grid-ir"></div>
+  </div>
+
+  <div class="section" id="section-global">
+    <div class="section-head">
+      <span class="flag">🌍</span>
+      <span class="section-title">ماینکرفت</span>
+      <span class="section-line"></span>
+      <span class="section-count" id="count-global">0</span>
+    </div>
+    <div class="grid" id="grid-global"></div>
+  </div>
+
+  <div class="notice">
+    <div class="notice-box">
+      <b>راهنما:</b> این قالب با داده‌ی نمونه پر شده. برای اضافه‌کردن آیدی واقعی، در کد صفحه به آرایه‌ی <span class="mono">servers</span> در انتهای فایل مراجعه کنید و مقادیر <span class="mono">name</span>، <span class="mono">ip</span>، <span class="mono">category</span> و <span class="mono">region</span> («ir» برای ایرانی، «global» برای ماینکرفت) را برای هر سرور وارد کنید.
+    </div>
+  </div>
+
+</main>
+
+<div class="track-head" id="mc-head">
+  <div class="reveal-icon" id="icon-mc">
+    <svg class="reveal-icon-base" viewBox="0 0 100 100"><polygon points="50,5 90,25 50,45 10,25" fill="#E8ECF1"/><polygon points="10,25 50,45 50,95 10,75" fill="#E8ECF1"/><polygon points="90,25 50,45 50,95 90,75" fill="#E8ECF1"/></svg>
+    <svg class="reveal-icon-fill" viewBox="0 0 100 100"><polygon points="50,5 90,25 50,45 10,25" fill="#6ABE46"/><polygon points="10,25 50,45 50,95 10,75" fill="#7B5230"/><polygon points="90,25 50,45 50,95 90,75" fill="#5C3D1D"/><polygon points="10,25 50,45 50,53 10,33" fill="#5FAE3D"/><polygon points="90,25 50,45 50,53 90,33" fill="#4E9433"/></svg>
+    <span class="reveal-icon-pct" id="pct-mc">0%</span>
+  </div>
+  <div class="track-head-text">
+    <h2>سرور ماینکرفت</h2>
+    <div class="track-desc">لیست سرورهای ماینکرفت — با اسکرول، بلاک کامل می‌شه</div>
+  </div>
+</div>
+
+<main>
+  <div class="section" id="section-mc">
+    <div class="grid" id="grid-mc"></div>
+  </div>
+</main>
+
+<footer>
+  <span>Gamepak · نسخه نمونه</span>
+  <span id="total-count" class="mono"></span>
+</footer>
+
+<script>
+  // نمونه داده — این آرایه رو با آیدی‌های واقعی خودتون جایگزین کنید
+  const servers = [
+    { name: "Tehran TS", ip: "tehrants.ir", category: "عمومی", region: "ir" },
+    { name: "TSSV", ip: "tssv.ir", category: "عمومی", region: "ir" },
+    { name: "TS Server", ip: "tsserver.ir", category: "عمومی", region: "ir" },
+    { name: "TCNL", ip: "tcnl.ir", category: "عمومی", region: "ir" },
+    { name: "TS Salatin", ip: "tssalatin.ir", category: "عمومی", region: "ir" },
+    { name: "TS Sky", ip: "tssky.ir", category: "عمومی", region: "ir" },
+    { name: "TGTS", ip: "tgts.ir", category: "عمومی", region: "ir" },
+    { name: "NXTS", ip: "nxts.ir", category: "عمومی", region: "ir" },
+    { name: "Free TS", ip: "freets.ir", category: "عمومی", region: "ir" },
+    { name: "Fallen TS", ip: "fallents.ir", category: "عمومی", region: "ir" },
+    { name: "Rog Clan", ip: "rogclan.ir", category: "گیمینگ", region: "ir" },
+    { name: "Zulat TS", ip: "zulats.ir", category: "عمومی", region: "ir" },
+    { name: "TS Gym", ip: "tsgym.ir", category: "عمومی", region: "ir" },
+    { name: "Alleh", ip: "alleh.ir", category: "عمومی", region: "ir" },
+    { name: "TS22", ip: "ts22.ir", category: "عمومی", region: "ir" },
+    { name: "TSMX", ip: "tsmx.ir", category: "عمومی", region: "ir" },
+    { name: "TS Win", ip: "tswin.ir", category: "عمومی", region: "ir" },
+    { name: "WFTS", ip: "wfts.ir", category: "عمومی", region: "ir" },
+    { name: "Black Ops Iran", ip: "blackopsiran.ir", category: "گیمینگ", region: "ir" },
+
+  ];
+
+  const mcServers = [
+    { name: "GunMax", ip: "play.gunmax.org" },
+    { name: "DragonCraft", ip: "dragon.pfmc.ir" },
+    { name: "InfiniteMC", ip: "infinitemc.ir" },
+    { name: "DreamLandMC", ip: "play.dreamlandmc.ir" },
+    { name: "MoonXCraft", ip: "play.moonxcraft.ir" },
+    { name: "PaladinGuard", ip: "java.paladinguard.ir" },
+    { name: "KamaGame", ip: "mc.kamagame.ir" },
+    { name: "Bardisland", ip: "play.bardisland.com" },
+    { name: "Thunder Network", ip: "nakhleston.m-c.pro" },
+    { name: "NEXORA", ip: "nexora.nx.tc" },
+    { name: "Skymine", ip: "skymine.shop" },
+  ];
+
+  const gridMc = document.getElementById('grid-mc');
+
+  function mcCardHTML(s){
+    return `
+      <div class="mc-card">
+        <span class="mc-status" aria-hidden="true"></span>
+        <div class="card-main">
+          <div class="card-name">${s.name}</div>
+          <div class="card-ip mono">${s.ip}</div>
+        </div>
+        <button class="copy-btn" data-ip="${s.ip}">کپی آی‌پی</button>
+      </div>
+    `;
+  }
+
+  function renderMC(){
+    gridMc.innerHTML = mcServers.map(mcCardHTML).join('');
+    attachCopyHandlers();
+  }
+
+  const gridIr = document.getElementById('grid-ir');
+  const gridGlobal = document.getElementById('grid-global');
+  const countIr = document.getElementById('count-ir');
+  const countGlobal = document.getElementById('count-global');
+  const totalCount = document.getElementById('total-count');
+  const searchInput = document.getElementById('search');
+  const tabs = document.querySelectorAll('.tab');
+  const sectionIr = document.getElementById('section-ir');
+  const sectionGlobal = document.getElementById('section-global');
+
+  let activeFilter = 'all';
+
+  function cardHTML(s){
+    return `
+      <div class="card" data-name="${s.name.toLowerCase()}" data-ip="${s.ip.toLowerCase()}">
+        <span class="status" aria-hidden="true"></span>
+        <div class="card-main">
+          <div class="card-name">${s.name}</div>
+          <div class="card-ip mono">${s.ip}</div>
+        </div>
+        <span class="tag ${s.category}">${s.category}</span>
+        <button class="copy-btn" data-ip="${s.ip}">کپی آی‌پی</button>
+      </div>
+    `;
+  }
+
+  function render(){
+    const query = searchInput.value.trim().toLowerCase();
+
+    const filtered = servers.filter(s => {
+      const matchesQuery = !query || s.name.toLowerCase().includes(query) || s.ip.toLowerCase().includes(query);
+      return matchesQuery;
+    });
+
+    const irList = filtered.filter(s => s.region === 'ir');
+    const globalList = filtered.filter(s => s.region === 'global');
+
+    gridIr.innerHTML = irList.length ? irList.map(cardHTML).join('') : `<div class="empty">موردی یافت نشد</div>`;
+    gridGlobal.innerHTML = globalList.length ? globalList.map(cardHTML).join('') : `<div class="empty">موردی یافت نشد</div>`;
+
+    countIr.textContent = irList.length;
+    countGlobal.textContent = globalList.length;
+    totalCount.textContent = `مجموع: ${filtered.length} سرور`;
+
+    sectionIr.style.display = (activeFilter === 'all' || activeFilter === 'ir') ? '' : 'none';
+    sectionGlobal.style.display = (activeFilter === 'all' || activeFilter === 'global') ? '' : 'none';
+
+    attachCopyHandlers();
+  }
+
+  function attachCopyHandlers(){
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ip = btn.getAttribute('data-ip');
+        navigator.clipboard?.writeText(ip).catch(()=>{});
+        btn.textContent = 'کپی شد ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'کپی آی‌پی';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeFilter = tab.getAttribute('data-filter');
+      render();
+    });
+  });
+
+  searchInput.addEventListener('input', render);
+
+  render();
+  renderMC();
+
+  /* ---------- Scroll-fill icons ---------- */
+  const tsTrackStart = document.getElementById('section-ir');
+  const tsTrackEnd = document.getElementById('section-ir');
+  const mcTrackEl = document.getElementById('section-mc');
+
+  const headsetFill = document.getElementById('icon-headset');
+  const mcFill = document.getElementById('icon-mc');
+  const pctHeadset = document.getElementById('pct-headset');
+  const pctMc = document.getElementById('pct-mc');
+
+  function progressAcross(startEl, endEl){
+    const startRect = startEl.getBoundingClientRect();
+    const endRect = endEl.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const top = startRect.top + window.scrollY;
+    const bottom = endRect.bottom + window.scrollY;
+    const total = (bottom - top) + vh * 0.6;
+    const covered = (window.scrollY + vh) - top - (vh * 0.4);
+    return Math.min(1, Math.max(0, covered / total));
+  }
+
+  let ticking = false;
+  function updateFills(){
+    const tsProgress = progressAcross(tsTrackStart, tsTrackEnd);
+    const mcProgress = progressAcross(mcTrackEl, mcTrackEl);
+
+    headsetFill.style.setProperty('--fill', tsProgress);
+    mcFill.style.setProperty('--fill', mcProgress);
+    pctHeadset.textContent = Math.round(tsProgress * 100) + '%';
+    pctMc.textContent = Math.round(mcProgress * 100) + '%';
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if(!ticking){
+      requestAnimationFrame(updateFills);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', updateFills);
+  updateFills();
+</script>
+
+</body>
+</html>
